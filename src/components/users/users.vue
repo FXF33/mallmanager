@@ -89,11 +89,21 @@ export default {
         this.getUserList()
     },
     methods: {
+        handleSizeChange(val){
+            this.pagesize=val
+            this.pagenum=1
+            this.getUserList()
+        },
+        handleCurrentChange(val){
+            // console.log(`当前页: ${val}`)
+            this.pagenum=val
+            this.getUserList()
+        },
         async getUserList() {
             const AUTH_TOKEN = localStorage.getItem('token')
             this.$http.defaults.headers.common['Authorization'] = AUTH_TOKEN
             const res = await this.$http.get(`users?query=${this.query}&pagenum=${this.pagenum}&pagesize=${this.pagesize}`)
-            console.log(res)
+            // console.log(res)
             const {
                 meta: {
                     msg,
