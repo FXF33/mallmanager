@@ -89,6 +89,25 @@
         <el-button type="primary" @click="addUser()">确 定</el-button>
       </div>
     </el-dialog>
+
+    <el-dialog title="编辑用户" :visible.sync="dialogFormVisibleEdit">
+        <el-form :model="form">
+            <el-form-item label="用户名称" label-width="100px">
+                <el-input v-model="form.username" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="邮箱" label-width="100px">
+                <el-input v-model="form.email" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="电话" label-width="100px">
+                <el-input v-model="form.mobile" autocomplete="off"></el-input>
+            </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+            <el-button @click="dialogFormVisibleEdit = false">取 消</el-button>
+            <el-button type="primary"
+            @click="editUser()">确 定</el-button>
+        </div>
+    </el-dialog>
   </el-card>
 </template>
 
@@ -112,6 +131,7 @@ export default {
       pagesize: 2,
       total: -1,
       dialogFormVisibleAdd: false,
+      dialogFormVisibleEdit: false,
       form: {
         username: "",
         password: "",
@@ -124,6 +144,9 @@ export default {
     this.getUserList();
   },
   methods: {
+    showEditUserDia(){
+        this.dialogFormVisibleEdit = true
+    },
     showMegBoxDele(userId) {
       this.$confirm("是否删除用户", "提示", {
         confirmButtonText: "确定",
