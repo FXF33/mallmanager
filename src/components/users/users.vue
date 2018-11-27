@@ -89,6 +89,13 @@ export default {
         this.getUserList()
     },
     methods: {
+        loadUserList(){
+            this.getUserList()
+        },
+        searchUser(){
+            this.pagenum=1
+            this.getUserList()
+        },
         handleSizeChange(val){
             this.pagesize=val
             this.pagenum=1
