@@ -32,14 +32,19 @@
 
       <el-table-column label="用户状态">
         <template slot-scope="scope">
-          <el-switch v-model="scope.row.mg_state" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
+          <el-switch
+            @change="changeUserMgstate(scope.row)"
+            v-model="scope.row.mg_state"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+          ></el-switch>
         </template>
       </el-table-column>
 
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button
-            @click="showEditUserDia()"
+            @click="showEditUserDia(scope.row)"
             size="mini"
             plain
             type="primary"
@@ -54,7 +59,9 @@
             icon="el-icon-delete"
             circle
           ></el-button>
-          <el-button size="mini" plain type="success" icon="el-icon-check" circle></el-button>
+          <el-button 
+          @click="showSetRoleDia(scope.row)"
+          size="mini" plain type="success" icon="el-icon-check" circle></el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -91,23 +98,40 @@
     </el-dialog>
 
     <el-dialog title="编辑用户" :visible.sync="dialogFormVisibleEdit">
-        <el-form :model="form">
-            <el-form-item label="用户名称" label-width="100px">
-                <el-input v-model="form.username" autocomplete="off"></el-input>
-            </el-form-item>
-            <el-form-item label="邮箱" label-width="100px">
-                <el-input v-model="form.email" autocomplete="off"></el-input>
-            </el-form-item>
-            <el-form-item label="电话" label-width="100px">
-                <el-input v-model="form.mobile" autocomplete="off"></el-input>
-            </el-form-item>
-        </el-form>
-        <div slot="footer" class="dialog-footer">
-            <el-button @click="dialogFormVisibleEdit = false">取 消</el-button>
-            <el-button type="primary"
-            @click="editUser()">确 定</el-button>
-        </div>
+      <el-form :model="form">
+        <el-form-item label="用户名称" label-width="100px">
+          <el-input v-model="form.username" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱" label-width="100px">
+          <el-input v-model="form.email" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="电话" label-width="100px">
+          <el-input v-model="form.mobile" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisibleEdit = false">取 消</el-button>
+        <el-button type="primary" @click="editUser()">确 定</el-button>
+      </div>
     </el-dialog>
+
+    <el-dialog title="分配角色" :visible.sync="dialogFormVisibleRole">
+      <el-form :model="form">
+        <el-form-item label="用户名" label-width="100px">{{currUsername}}</el-form-item>
+        <el-form-item label="角色" label-width="100px">
+          <!-- 如果 select 的v-model绑定的数据的值 -1和 option的value值 -->
+          <el-select v-model="currRoleId">
+            <el-option label="请选择" :value="-1"></el-option>
+            <el-option v-for="(item,i) in roles" :key="i" :label="item.roleName" :value="item.id"></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisibleRole = false">取 消</el-button>
+        <el-button type="primary" @click="setRole()">确 定</el-button>
+      </div>
+    </el-dialog>
+
   </el-card>
 </template>
 
@@ -132,6 +156,7 @@ export default {
       total: -1,
       dialogFormVisibleAdd: false,
       dialogFormVisibleEdit: false,
+      dialogFormVisibleRole: false,
       form: {
         username: "",
         password: "",
@@ -144,9 +169,33 @@ export default {
     this.getUserList();
   },
   methods: {
-    showEditUserDia(){
-        this.dialogFormVisibleEdit = true
+    //分配用户角色-打开对话框
+    showSetRoleDia(){
+      this.dialogFormVisibleRole=true
     },
+    //修改用户状态
+    async changeUserMgstate(user) {
+      const res = await this.$http.put(
+        `users/${user.id}/state/${user.mg_state}`
+      );
+    },
+    //编辑-发送请求
+    async editUser() {
+      const res = await this.$http.put(`users/${this.form.id}`, this.form);
+      const {
+        meta: { status, msg }
+      } = res.data;
+      if (status === 200) {
+        this.dialogFormVisibleEdit = false;
+        this.getUserList();
+      }
+    },
+    //编辑-显示页面
+    showEditUserDia(user) {
+      this.form = user;
+      this.dialogFormVisibleEdit = true;
+    },
+    //删除-打开消息提示框
     showMegBoxDele(userId) {
       this.$confirm("是否删除用户", "提示", {
         confirmButtonText: "确定",
@@ -161,7 +210,7 @@ export default {
         });
       });
     },
-
+    //添加用户-发送请求
     async addUser() {
       this.dialogFormVisibleAdd = false;
       const res = await this.$http.post("users", this.form);
@@ -177,26 +226,32 @@ export default {
         this.$message.warning(msg);
       }
     },
+    //添加用户-显示对话框
     showAddUserDia() {
       this.dialogFormVisibleAdd = true;
     },
     loadUserList() {
       this.getUserList();
     },
+    //搜索用户
     searchUser() {
       this.pagenum = 1;
       this.getUserList();
     },
+    // 分页相关的方法
+    // 每个条数改变
     handleSizeChange(val) {
       this.pagesize = val;
       this.pagenum = 1;
       this.getUserList();
     },
+    // 当前页码改变时 pagenum=1->2
     handleCurrentChange(val) {
       // console.log(`当前页: ${val}`)
       this.pagenum = val;
       this.getUserList();
     },
+    // 获取用户列表数据
     async getUserList() {
       const AUTH_TOKEN = localStorage.getItem("token");
       this.$http.defaults.headers.common["Authorization"] = AUTH_TOKEN;
