@@ -162,15 +162,36 @@ export default {
         password: "",
         email: "",
         mobile: ""
-      }
+      },
+      currUsername:'',
+      currRoleId:-1,
+      roles:[],
+      currUserId:-1
     };
   },
   created() {
     this.getUserList();
   },
   methods: {
+    //分配角色-发送修改请求
+    async setRole(){
+      const res=await this.$http.put(`users/${this.currUserId}/role`,{
+        rid:this.currRoleId
+      })
+      const {
+        meta: { status, msg }
+      } = res.data;
+      this.$message.success(msg)
+      this.dialogFormVisibleRole=false
+    },
     //分配用户角色-打开对话框
-    showSetRoleDia(){
+    async showSetRoleDia(user){
+      this.currUserId=user.id
+      this.currUsername=user.username
+      const res1=await this.$http.get(`roles`)
+      this.roles=res1.data.data
+      const res2=await this.$http.get(`users/${user.id}`)
+      this.currRoleId=res2.data.data.rid
       this.dialogFormVisibleRole=true
     },
     //修改用户状态
