@@ -1,26 +1,25 @@
 <template>
-  <div id="app">
+<div id="app">
 
-    <router-view/>
-  </div>
+    <router-view />
+</div>
 </template>
 
 <script>
 export default {
-  name: 'App',
-  
-  // mounted(){
-  //       // 关闭浏览器窗口的时候清空浏览器缓存在localStorage的数据
-  //       window.onbeforeunload = function (e) {
-  //           var storage = window.localStorage;
-  //           storage.clear()
-  //       }
-  // }
+    name: 'App',
+    mounted() {
+        // 关闭浏览器窗口的时候清空浏览器缓存在localStorage的数据
+        window.onbeforeunload = function (e) {
+            var storage = window.localStorage;
+            storage.clear()
+        }
+    }
 }
 </script>
 
 <style>
 #app {
-  height: 100%;
+    height: 100%;
 }
 </style>
