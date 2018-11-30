@@ -50,7 +50,7 @@
                             <span>角色列表</span>
                         </template>
                     </el-menu-item>
-                    <el-menu-item index="1-1">
+                    <el-menu-item index="rights">
                         <template slot="title">
                             <i class="el-icon-location"></i>
                             <span>权限列表</span>
