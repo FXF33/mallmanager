@@ -62,11 +62,11 @@ export default {
   methods: {
     // 获取列表权限数据
     async getRightlist() {
-      const AUTH_TOKEN = localStorage.getItem('token')
-      this.$http.defaults.headers.common['Authorization'] = AUTH_TOKEN
+    //   const AUTH_TOKEN = localStorage.getItem('token')
+    //   this.$http.defaults.headers.common['Authorization'] = AUTH_TOKEN
       const res = await this.$http.get(`rights/list`)
       this.rightlist = res.data.data
-      console.log(res)
+    //   console.log(res)
     }
   }
 }
