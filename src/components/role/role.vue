@@ -17,9 +17,15 @@
                         <i class="el-icon-arrow-right"></i>
                     </el-col>
                     <el-col :span="20">
-                        <el-tag closable>
-
-                        </el-tag>
+                        <el-row v-for="(item2,index) in item1.children" :key=index>
+                            <el-col :span="4">
+                                <el-tag type="warning" closable>{{item2.authName}}</el-tag>
+                                <i class="el-icon-arrow-right"></i>
+                            </el-col>
+                            <el-col :span="20">
+                                <el-tag @close="deleRight(scope.row,item3.id)" type="info" closable v-for="(item3,index) in item2.children" :key="index">{{item3.authName}}</el-tag>
+                            </el-col>
+                        </el-row>
                     </el-col>
                 </el-row>
 
@@ -55,6 +61,12 @@ export default {
         this.getRolelist()
     },
     methods: {
+        //删除当前角色的某个权限
+        async deleRight(role,rightId){
+            const res=await this.$http.delete(`roles/${role.id}/rights/${rightId}`)
+            role.children=res.data.data
+        },
+        //获取角色权限数据
         async getRolelist() {
             const res = await this.$http.get(`roles`)
             this.rolelist = res.data.data
