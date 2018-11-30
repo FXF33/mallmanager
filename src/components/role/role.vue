@@ -35,7 +35,7 @@
             </template>
         </el-table-column>
         <el-table-column type="index" label="#" width="80"></el-table-column>
-        <el-table-column prop="roleName" label="角色名称" width="300"></el-table-column>
+        <el-table-column prop="roleName" label="角色名称" width="200"></el-table-column>
         <el-table-column prop="roleDesc" label="角色描述"></el-table-column>
 
         <el-table-column label="操作">
@@ -47,6 +47,22 @@
         </el-table-column>
     </el-table>
 
+    <el-dialog title="修改权限" :visible.sync="dialogFormVisibleRight">
+        <el-tree 
+        ref="tree" 
+        :data="treelist" 
+        default-expand-all 
+        show-checkbox 
+        node-key="id" 
+        :default-checked-keys="arrcheck"
+        :props="defaultProps">
+        </el-tree>
+        <span slot="footer" class="dialog-footer">
+            <el-button @click="dialogFormVisibleRight = false">取 消</el-button>
+            <el-button type="primary" @click="dialogFormVisibleRight = false">确 定</el-button>
+        </span>
+    </el-dialog>
+
 </el-card>
 </template>
 
@@ -54,17 +70,41 @@
 export default {
     data() {
         return {
-            rolelist: []
+            rolelist: [],
+            dialogFormVisibleRight:false,
+            treelist:[],
+            arrcheck:[],
+            defaultProps:{
+                children:'children',
+                label:'authName'
+            },
+            currRoleId:-1
         }
     },
     created() {
         this.getRolelist()
     },
     methods: {
+        //分配权限-树形结构-打开对话框
+        async showSetRoleDia(role){
+            this.currRoleId=role.id
+            const res=await this.$http.get(`rights/tree`)
+            this.treelist=res.data.data
+            let arrtemp=[]
+            role.children.forEach(item1=>{
+                item1.children.forEach(item2=>{
+                    item2.children.forEach(item3=>{
+                        arrtemp.push(item3.id)
+                })
+                })
+            })
+            this.arrcheck=arrtemp
+            this.dialogFormVisibleRight=true
+        },
         //删除当前角色的某个权限
-        async deleRight(role,rightId){
-            const res=await this.$http.delete(`roles/${role.id}/rights/${rightId}`)
-            role.children=res.data.data
+        async deleRight(role, rightId) {
+            const res = await this.$http.delete(`roles/${role.id}/rights/${rightId}`)
+            role.children = res.data.data
         },
         //获取角色权限数据
         async getRolelist() {
