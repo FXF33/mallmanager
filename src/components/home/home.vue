@@ -54,12 +54,13 @@ export default {
         }
     },
     beforeCreate() {
-        const token = localStorage.getItem("token");
-        if (!token) {
-            this.$router.push({
-                name: "login"
-            });
-        }
+        //获取token
+        // const token = localStorage.getItem("token");
+        // if (!token) {
+        //     this.$router.push({
+        //         name: "login"
+        //     });
+        // }
     },
     created(){
         this.getMenus()
