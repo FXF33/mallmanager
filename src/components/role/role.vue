@@ -59,7 +59,7 @@
         </el-tree>
         <span slot="footer" class="dialog-footer">
             <el-button @click="dialogFormVisibleRight = false">取 消</el-button>
-            <el-button type="primary" @click="dialogFormVisibleRight = false">确 定</el-button>
+            <el-button type="primary" @click="setRoleRight()">确 定</el-button>
         </span>
     </el-dialog>
 
@@ -85,6 +85,21 @@ export default {
         this.getRolelist()
     },
     methods: {
+        //分配权限-发送请求
+        async setRoleRight(){
+            let arr2=this.$refs.tree.getHalfCheckedKeys()
+            // console.log(arr2)
+            let arr1=this.$refs.tree.getCheckedKeys()
+            // console.log(arr1)
+            let arr=[...arr1,...arr2]
+            // console.log(arr)
+            const res=await this.$http.post(`roles/${this.currRoleId}/rights`,{
+                rids: arr.join(',')
+            })
+            console.log(res)
+            this.dialogFormVisibleRight=false
+            this.getRolelist()
+        },
         //分配权限-树形结构-打开对话框
         async showSetRoleDia(role){
             this.currRoleId=role.id
@@ -110,7 +125,7 @@ export default {
         async getRolelist() {
             const res = await this.$http.get(`roles`)
             this.rolelist = res.data.data
-            console.log(res)
+            // console.log(res)
         }
     }
 }
