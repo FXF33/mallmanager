@@ -192,8 +192,18 @@ export default {
             this.form.goods_cat = this.selectedOptions.join(",")
             // 2. pics -> 图片上传时的成功和移除的函数中进行处理
 
+            let arr1=this.arrDyparams.map(item=>{
+              return {attr_id:item.attr_id,attr_value:item.attr_vals}
+            })
+            let arr2=this.arrStaticparams.map(item=>{
+              return {attr_id:item.attr_id,attr_value:item.attr_vals}
+            })
+            let attrs=[...arr1,...arr2]
+            this.form.attrs=attrs
+
             const res = await this.$http.post(`goods`, this.form)
-            console.log(res)
+            // console.log(res)
+            this.$router.push({name:'goods'})
 
         },
         // 图片上传
@@ -209,7 +219,7 @@ export default {
 
               let Index = this.form.pics.findIndex((item)=>{
                   return item.pic === file.response.data.tmp_path
-              })
+              }) 
 
               console.log(Index)
 
