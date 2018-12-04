@@ -24,7 +24,7 @@
       </el-col>
     </el-row>
 
-    <el-table :data="userlist" style="width: 100%">
+    <el-table v-loading="loading" :data="userlist" style="width: 100%">
       <el-table-column type="index" label="#" width="80"></el-table-column>
       <el-table-column prop="username" label="姓名" width="100"></el-table-column>
       <el-table-column prop="email" label="邮箱" width="180"></el-table-column>
@@ -142,6 +142,7 @@
 export default {
   data() {
     return {
+      loading:true,
       query: "",
       userlist: [
         {
@@ -293,8 +294,9 @@ export default {
         this.total = total;
         this.userlist = users;
         this.$message.success(msg);
+        this.loading=false
       } else {
-        this.$message.warning(msg);
+        // this.$message.warning(msg);
       }
     }
   }
