@@ -23,7 +23,7 @@ MyHttpServer.install = (Vue) => {
   //添加相应拦截器
   axios.interceptors.response.use(function (response) {
     // 对响应数据做点什么
-    console.log(response)
+    // console.log(response)
     let {
       meta:{
         msg,
